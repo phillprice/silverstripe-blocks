@@ -48,29 +48,31 @@ class BlocksSiteTreeExtension extends SiteTreeExtension{
 			$gridSource = $this->owner->Blocks();
 			$fields->addFieldToTab('Root.Blocks', GridField::create('Blocks', 'Blocks', $gridSource, $gridConfig));
 			
-			// Blocks inherited from SiteConfig and BlockSets
-			$fields->addFieldToTab('Root.Blocks', HeaderField::create('InheritedBlocksHeader', 'Inherited Blocks'));
-			$fields->addFieldToTab('Root.Blocks', CheckboxField::create('InheritGlobalBlocks', 'Inherit Global Blocks from Site Configuration'));
-			$fields->addFieldToTab('Root.Blocks', CheckboxField::create('InheritBlockSets', 'Inherit Blocks from Block Sets'));
-			
-			$allInherited = $this->getBlockList(null, false, false, true, true, true, true);
-			if($allInherited->count()){
-				$fields->addFieldToTab('Root.Blocks', ListBoxField::create('DisabledBlocks', 'Disable Inherited Blocks', $allInherited->map('ID', 'Title'), null, null, true)
-					->setDescription('Select any inherited blocks that you would not like displayed on this page.')
-				);
+			$inheritsGlobalBlocks = $this->getInheritedGlobalBlocks(null,true)->count();
+			$inheritsBlockSets = $this->getBlocksFromAppliedBlockSets(null,true);
 
-				$activeInherited = $this->getBlockList(null, false, false, true, true, false);
-				//var_dump($activeInherited->count());
-				if($activeInherited->count()){
+			if($inheritsGlobalBlocks || ($inheritsBlockSets && $inheritsBlockSets->count())){
+				// Blocks inherited from SiteConfig and BlockSets
+				$fields->addFieldToTab('Root.Blocks', HeaderField::create('InheritedBlocksHeader', 'Inherited Blocks'));
+				$fields->addFieldToTab('Root.Blocks', CheckboxField::create('InheritGlobalBlocks', 'Inherit Global Blocks from Site Configuration'));
+				$fields->addFieldToTab('Root.Blocks', CheckboxField::create('InheritBlockSets', 'Inherit Blocks from Block Sets'));
+				
+				$allInherited = $this->getBlockList(null, false, false, true, true, true, true);
+				if($allInherited->count()){
+					$fields->addFieldToTab('Root.Blocks', ListBoxField::create('DisabledBlocks', 'Disable Inherited Blocks', $allInherited->map('ID', 'Title'), null, null, true)
+						->setDescription('Select any inherited blocks that you would not like displayed on this page.')
+					);
 
-					$fields->addFieldToTab('Root.Blocks', GridField::create('InheritedBlockList', 'Inherited Blocks', $activeInherited, GridFieldConfig_BlockManager::create(false, false, false)));	
+					$activeInherited = $this->getBlockList(null, false, false, true, true, false);
+					//var_dump($activeInherited->count());
+					if($activeInherited->count()){
+
+						$fields->addFieldToTab('Root.Blocks', GridField::create('InheritedBlockList', 'Inherited Blocks', $activeInherited, GridFieldConfig_BlockManager::create(false, false, false)));	
+					}
+				}else{
+					$fields->addFieldToTab('Root.Blocks', ReadonlyField::create('DisabledBlocksReadOnly', 'Disable Inherited Blocks', 'This page has no inherited blocks to disable.'));
 				}
-			}else{
-				$fields->addFieldToTab('Root.Blocks', ReadonlyField::create('DisabledBlocksReadOnly', 'Disable Inherited Blocks', 'This page has no inherited blocks to disable.'));
 			}
-
-		}else{
-			$fields->addFieldToTab('Root.Blocks', LiteralField::create('Blocks', 'This page type has no Block Areas configured.'));
 		}
 	}
 

@@ -11,9 +11,9 @@ class GridFieldConfig_BlockManager extends GridFieldConfig{
 		
 		$this->addComponent($editable = new GridFieldEditableColumns());
 		$editable->setDisplayFields(array(
-			'singular_name' => array('title' => 'Block Type', 'field' => 'ReadonlyField'),
 			'Title'        	=> array('title' => 'Title', 'field' => 'ReadonlyField'),
-			'AreaNice' 		=> array('title' => 'Block Area', 'field' => 'ReadonlyField'),
+			'singular_name' => array('title' => 'Type', 'field' => 'ReadonlyField'),
+			'AreaNice' 		=> array('title' => 'Area', 'field' => 'ReadonlyField'),
 			'InheritedFrom' => array('title' => 'Inherited From', 'field' => 'ReadonlyField'),
 			'Weight'    	=> array('title' => 'Weight', 'field' => 'NumericField'),
 			//'PagesCount'  	=> array('title' => 'Number of Pages', 'field' => 'ReadonlyField'),

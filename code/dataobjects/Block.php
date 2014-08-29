@@ -72,14 +72,20 @@ class Block extends DataObject implements PermissionProvider{
 			$pageClass = null;
 			$controller = Controller::curr();		
 			$fields->replaceField('Area', $areasField->setRightTitle($areasPreviewButton));
+			$fields->dataFieldByName('Weight')->setRightTitle('Controls block ordering. A small weight value will float, a large will sink.');
 
+			$fields->addFieldsToTab('Root.Settings', array(
+				//$fields->dataFieldByName('Title'),
+				$classField,
+				$fields->dataFieldByName('Area'),
+				$fields->dataFieldByName('Published'),
+				$fields->dataFieldByName('Weight'),
+				$fields->dataFieldByName('ExtraCSSClasses')
+			));
 
 			$fields->removeFieldFromTab('Root', 'SiteConfigs');
 			$fields->removeFieldFromTab('Root', 'BlockSets');
 			$fields->removeFieldFromTab('Root', 'Pages');
-			$fields->dataFieldByName('Weight')->setRightTitle('Controls block ordering. A small weight value will float, a large will sink.');
-			$fields->addFieldToTab('Root.Main', TextField::create('ExtraCSSClasses', 'Extra CSS Classes'));
-			$fields->addFieldToTab('Root.Main', $classField, 'Area');
 
 			// Viewer groups
 			$fields->removeFieldFromTab('Root', 'ViewerGroups');

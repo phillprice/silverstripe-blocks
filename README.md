@@ -98,9 +98,15 @@ There is some markup required in your BlockArea templates to facilitate this: Th
 </div>
 ```
 
+## Changes (dev branch)
 
+* Don't show blocks tab on pages with no block areas defined.
+* Don't show inderited blocks options if there are no blocks to inherit
+* Moved block configuration fields into a Settings tab
+* Title now first column on block grid field
 
 ## TODO
 
+* Fix bug where ClassName can't be changed
 * Dev - Forms inside Blocks (BlockController?)
 * Write Tests
