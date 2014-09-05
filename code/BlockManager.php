@@ -8,6 +8,12 @@ class BlockManager extends Object{
 	private static $themes = array();
 
 
+	/**
+	 * Determines whether the CMS settings area should display a "global" blocks manager 
+	 * @var boolean
+	 **/
+	private static $enable_global_blocks = true;
+
 	public function __construct(){
 		parent::__construct();
 	}

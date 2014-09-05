@@ -17,18 +17,20 @@ class BlocksSiteConfigExtension extends DataExtension {
 	 * Block manager for SiteConfig
 	 **/
 	public function updateCMSFields(FieldList $fields) {
-		if(count($this->blockManager->getAreasForTheme())){
-	
-			// Blocks related directly to this Page 
-			$gridConfig = GridFieldConfig_BlockManager::create()
-				->addExisting($this->owner->class)
-				->addBulkEditing();
+		if(BlockManager::config()->enable_global_blocks){
+			if(count($this->blockManager->getAreasForTheme())){
+		
+				// Blocks related directly to this Page 
+				$gridConfig = GridFieldConfig_BlockManager::create()
+					->addExisting($this->owner->class)
+					->addBulkEditing();
 
-			$gridSource = $this->owner->Blocks();
-			$fields->addFieldToTab('Root.Blocks', GridField::create('Blocks', 'Blocks', $gridSource, $gridConfig));
+				$gridSource = $this->owner->Blocks();
+				$fields->addFieldToTab('Root.Blocks', GridField::create('Blocks', 'Blocks', $gridSource, $gridConfig));
 
-		}else{
-			$fields->addFieldToTab('Root.Blocks', LiteralField::create('Blocks', 'This theme has no Block Areas configured.'));
+			}else{
+				$fields->addFieldToTab('Root.Blocks', LiteralField::create('Blocks', 'This theme has no Block Areas configured.'));
+			}
 		}
 	}
 }
