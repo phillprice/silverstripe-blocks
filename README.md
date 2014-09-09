@@ -109,6 +109,10 @@ There is some markup required in your BlockArea templates to facilitate this: Th
 * Moved block configuration fields into a Settings tab
 * Title now first column on block grid field
 * Global blocks can be disabled via yml config. This removes clutter from the cms by removing blocks tab from site config.
+* Make use of GridFieldAddNewMultiClass for block gridfield
+* Combine block CSSClasses with extra CSSClasses
+* tidied up css classnames
+* Added default Block.ss
 
 ## TODO
 

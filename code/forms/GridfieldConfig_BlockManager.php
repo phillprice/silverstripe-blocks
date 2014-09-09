@@ -26,12 +26,17 @@ class GridFieldConfig_BlockManager extends GridFieldConfig{
 		$this->addComponent(new GridFieldDetailForm());
 		$this->addComponent($sort = new GridFieldSortableHeader());
 		$this->addComponent($filter = new GridFieldFilterHeader());
+		$this->addComponent(new GridFieldOrderableRows('Weight'));
 
 		$filter->setThrowExceptionOnBadDataType(false);
 		$sort->setThrowExceptionOnBadDataType(false);
 
 		if($canAdd){
-			$this->addComponent(new GridFieldAddNewButton('buttons-before-left'));	
+			$classes = ArrayLib::valuekey(ClassInfo::subclassesFor('Block'));
+			array_shift($classes);
+			$addnew = new GridFieldAddNewMultiClass();
+			$addnew->setClasses($classes);
+     		$this->addComponent($addnew);
 		}
 		
 		if($canEdit){
@@ -57,8 +62,7 @@ class GridFieldConfig_BlockManager extends GridFieldConfig{
 			return $this;
 		}
 
-		$this->addComponent($add = new GridFieldAddExistingSearchButton());
-		
+		$add = new GridFieldAddExistingSearchButton();
 		$list = Block::get()->filter('Area', array_keys($areas));
 
 		// TODO find a more appropriate way of doing this
@@ -67,6 +71,7 @@ class GridFieldConfig_BlockManager extends GridFieldConfig{
 		}
 
 		$add->setSearchList($list);
+		$this->addComponent($add);
 
 		return $this;
 	}

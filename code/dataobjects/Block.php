@@ -58,63 +58,53 @@ class Block extends DataObject implements PermissionProvider{
 		unset($classes['Block']);
 		$classField = DropdownField::create('ClassName', 'Block Type', $classes);
 
-		if(!$this->ID){
-			$fields = array(
-				TextField::create('Title', 'Title'),
-				$classField,
-				$areasField->setRightTitle($areasPreviewButton),
-			);
-			
-			return FieldList::create($fields);
+		$fields = parent::getCMSFields();
+		$pageClass = null;
+		$controller = Controller::curr();		
+		$fields->replaceField('Area', $areasField->setRightTitle($areasPreviewButton));
+		$fields->dataFieldByName('Weight')->setRightTitle('Controls block ordering. A small weight value will float, a large will sink.');
 
-		}else{
-			$fields = parent::getCMSFields();
-			$pageClass = null;
-			$controller = Controller::curr();		
-			$fields->replaceField('Area', $areasField->setRightTitle($areasPreviewButton));
-			$fields->dataFieldByName('Weight')->setRightTitle('Controls block ordering. A small weight value will float, a large will sink.');
+		$fields->addFieldsToTab('Root.Settings', array(
+			//$fields->dataFieldByName('Title'),
+			$classField,
+			$fields->dataFieldByName('Area'),
+			$fields->dataFieldByName('Published'),
+			$fields->dataFieldByName('Weight'),
+			$fields->dataFieldByName('ExtraCSSClasses')
+		));
 
-			$fields->addFieldsToTab('Root.Settings', array(
-				//$fields->dataFieldByName('Title'),
-				$classField,
-				$fields->dataFieldByName('Area'),
-				$fields->dataFieldByName('Published'),
-				$fields->dataFieldByName('Weight'),
-				$fields->dataFieldByName('ExtraCSSClasses')
-			));
+		$fields->removeFieldFromTab('Root', 'SiteConfigs');
+		$fields->removeFieldFromTab('Root', 'BlockSets');
+		$fields->removeFieldFromTab('Root', 'Pages');
 
-			$fields->removeFieldFromTab('Root', 'SiteConfigs');
-			$fields->removeFieldFromTab('Root', 'BlockSets');
-			$fields->removeFieldFromTab('Root', 'Pages');
+		// Viewer groups
+		$fields->removeFieldFromTab('Root', 'ViewerGroups');
+		$groupsMap = Group::get()->map('ID', 'Breadcrumbs')->toArray();
+		asort($groupsMap);
+		$viewersOptionsField = new OptionsetField(
+			"CanViewType", 
+			_t('Block.ACCESSHEADER', "Who can view this block?")
+		);
+		$viewerGroupsField = ListboxField::create("ViewerGroups", _t('SiteTree.VIEWERGROUPS', "Viewer Groups"))
+			->setMultiple(true)
+			->setSource($groupsMap)
+			->setAttribute(
+				'data-placeholder', 
+				_t('SiteTree.GroupPlaceholder', 'Click to select group')
+		);
+		$viewersOptionsSource = array();
+		$viewersOptionsSource["Anyone"] = _t('SiteTree.ACCESSANYONE', "Anyone");
+		$viewersOptionsSource["LoggedInUsers"] = _t('SiteTree.ACCESSLOGGEDIN', "Logged-in users");
+		$viewersOptionsSource["OnlyTheseUsers"] = _t('SiteTree.ACCESSONLYTHESE', "Only these people (choose from list)");
+		$viewersOptionsField->setSource($viewersOptionsSource);
 
-			// Viewer groups
-			$fields->removeFieldFromTab('Root', 'ViewerGroups');
-			$groupsMap = Group::get()->map('ID', 'Breadcrumbs')->toArray();
-			asort($groupsMap);
-			$viewersOptionsField = new OptionsetField(
-				"CanViewType", 
-				_t('SiteTree.ACCESSHEADER', "Who can view this page?")
-			);
-			$viewerGroupsField = ListboxField::create("ViewerGroups", _t('SiteTree.VIEWERGROUPS', "Viewer Groups"))
-				->setMultiple(true)
-				->setSource($groupsMap)
-				->setAttribute(
-					'data-placeholder', 
-					_t('SiteTree.GroupPlaceholder', 'Click to select group')
-			);
-			$viewersOptionsSource = array();
-			$viewersOptionsSource["Anyone"] = _t('SiteTree.ACCESSANYONE', "Anyone");
-			$viewersOptionsSource["LoggedInUsers"] = _t('SiteTree.ACCESSLOGGEDIN', "Logged-in users");
-			$viewersOptionsSource["OnlyTheseUsers"] = _t('SiteTree.ACCESSONLYTHESE', "Only these people (choose from list)");
-			$viewersOptionsField->setSource($viewersOptionsSource);
+		$fields->addFieldsToTab('Root.ViewerGroups', array(
+			$viewersOptionsField,
+			$viewerGroupsField,
+		));
 
-			$fields->addFieldsToTab('Root.ViewerGroups', array(
-				$viewersOptionsField,
-				$viewerGroupsField,
-			));
-
-			return $fields;
-		}
+		return $fields;
+		
 		
 	}
 
@@ -252,6 +242,15 @@ class Block extends DataObject implements PermissionProvider{
         	$urls[] = $page->Link();
         }
         return $urls;
+    }
+
+
+    public function CSSClasses($stopAtClass = 'DataObject'){
+		$classes = strtolower(parent::CSSClasses($stopAtClass));
+		if($this->ExtraCSSClasses){
+			$classes .= ' ' . $this->ExtraCSSClasses;
+		}
+		return $classes;
     }
 
 }
